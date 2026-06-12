@@ -22,25 +22,50 @@ export const getPlacesData = async (type, sw, ne) => {
   }
 };
 
+
 export const getWeatherData = async (lat, lng) => {
   try {
     if (lat && lng) {
-      const options = {
-        method: 'GET',
-        url: 'https://open-weather-map-api5.p.rapidapi.com/weather.php',
+      const response = await axios.get('https://api.open-meteo.com/v1/forecast', {
         params: {
-          lat,
-          lon: lng,
+          latitude: lat,
+          longitude: lng,
+          current: 'weather_code',
+        }
+      });
+      
+      const { latitude, longitude, current } = response.data;
+      const wmoCode = current?.weather_code || 0;
+      
+      let icon = '01d'; 
+      if (wmoCode === 0) icon = '01d';
+      //partly cloudy
+      else if (wmoCode === 1 || wmoCode === 2) icon = '02d';
+      //cloudy
+      else if (wmoCode === 3) icon = '03d'; 
+      //foggy
+      else if (wmoCode === 45 || wmoCode === 48) icon = '50d'; 
+      //rain
+      else if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(wmoCode)) icon = '10d'; 
+      //snow
+      else if ([71, 73, 75, 77, 85, 86].includes(wmoCode)) icon = '13d'; 
+      //thunderstorm
+      else if ([95, 96, 99].includes(wmoCode)) icon = '11d'; 
+
+      const formattedData = {
+        coord: {
+          lat: latitude,
+          lon: longitude,
         },
-        headers: {
-          'x-rapidapi-key': process.env.REACT_APP_RAPIDAPI_KEY,
-          'x-rapidapi-host': 'open-weather-map-api5.p.rapidapi.com',
-          'Content-Type': 'application/json',
-        },
+        weather: [
+          {
+            icon: icon,
+          }
+        ]
       };
 
-      const { data } = await axios.request(options);
-      return data;
+      console.log("WEATHER RESPONSE:", formattedData);
+      return formattedData;
     }
   } catch (error) {
     console.log(error);

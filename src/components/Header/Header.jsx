@@ -13,7 +13,7 @@ const Header=({onPlaceChanged,onLoad})=>{
             <Toolbar className={classes.toolbar}>
 
                 <Typography variant="h5" className={classes.title}>
-                    Travel Advisor
+                    Travel Advisor| TripSphere
                 </Typography>
 
                 <Box display="flex">

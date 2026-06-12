@@ -4,7 +4,6 @@ import { Paper, Typography, useMediaQuery } from '@material-ui/core';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import Rating from '@material-ui/lab/Rating';
 import restImage from '../../images/rest.png';
-
 import mapStyles from '../../mapStyles';
 import useStyles from './styles.js';
 
@@ -15,7 +14,6 @@ const Map=({coords,places,setCoords,setBounds,setChildClicked,weatherData})=>{
   return (
     <div className={classes.mapContainer}>
         <GoogleMapReact
-            //loads google maps using API key
             bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyBW48CrSPmiftcMpF2iWTSYXNuMZbWVlQI' }}
 
             defaultCenter={coords}
@@ -33,13 +31,14 @@ const Map=({coords,places,setCoords,setBounds,setChildClicked,weatherData})=>{
             }
         >
 
-        {places.length && places.map((place,i)=>(
-          <div
+       {places.length && places.map((place,i)=>(
+        <div
             className={classes.markerContainer}
             lat={Number(place.latitude)}
             lng={Number(place.longitude)}
             key={i}
-          >
+        >
+
             {!is_Desktop ? 
               <LocationOnOutlinedIcon color="primary" fontSize="large" /> : 
               (
@@ -47,8 +46,12 @@ const Map=({coords,places,setCoords,setBounds,setChildClicked,weatherData})=>{
                     <Typography className={classes.typography} variant="subtitle2" gutterBottom> {place.name}</Typography>
                         <img
                           className={classes.pointer}
-                          src={place.photo ? place.photo.images.large.url : restImage}
-                        />
+                          src={
+                          place?.photo?.images?.large?.url ||
+                          place?.photo?.images?.medium?.url ||
+                          restImage
+                      }
+                      />
                     <Rating name="read-only" size="small" value={Number(place.rating)} readOnly />
                 </Paper>
               )
@@ -56,11 +59,21 @@ const Map=({coords,places,setCoords,setBounds,setChildClicked,weatherData})=>{
           </div>
         ))}
 
-        {weatherData?.list?.length && weatherData.list.map((data,i)=>(
-          <div key={i} lat={data.coord.lat} lng={data.coord.lon}>
-            <img src={`http://openweathermap.org/img/w/${data.weather[0].icon}.png`} height="70px" />
+        {weatherData?.list?.length ? (
+          weatherData.list.map((data, i) => (
+            <div key={i} lat={data.coord.lat} lng={data.coord.lon} className={classes.weatherContainer}>
+              <img src={`https://openweathermap.org/img/w/${data.weather[0].icon}.png`} height="35px" alt="weather" />
+            </div>
+          ))
+        ) : weatherData?.weather?.length ? (
+          <div lat={weatherData.coord?.lat || coords.lat} lng={weatherData.coord?.lon || coords.lng} className={classes.weatherContainer}>
+            <img src={`https://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`} height="35px" alt="weather" />
           </div>
-        ))}
+        ) : weatherData?.current?.condition?.icon ? (
+          <div lat={weatherData.location?.lat || coords.lat} lng={weatherData.location?.lon || coords.lng} className={classes.weatherContainer}>
+            <img src={weatherData.current.condition.icon.startsWith('http') ? weatherData.current.condition.icon : `https:${weatherData.current.condition.icon}`} height="35px" alt="weather" />
+          </div>
+        ) : null}
 
       </GoogleMapReact>
     </div>

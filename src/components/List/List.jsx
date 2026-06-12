@@ -3,7 +3,6 @@ import {CircularProgress,Grid,Typography,InputLabel,MenuItem,FormControl,Select}
 import PlaceDetails from '../PlaceDetails/PlaceDetails';
 import useStyles from './styles.js';
 
-
 const List=({places,type,setType,rating,setRating,childClicked,isLoading})=>{
   const [elRefs,setElRefs]=useState([]);
   const classes=useStyles();
@@ -12,9 +11,25 @@ const List=({places,type,setType,rating,setRating,childClicked,isLoading})=>{
     setElRefs((refs) => Array(places.length).fill().map((_, i) => refs[i] || createRef()));
   }, [places]);
 
+  const getTagline = () => {
+    switch(type) {
+      case 'restaurants':
+        return 'Top Dining & Restaurants';
+      case 'hotels':
+        return 'Premium Stays & Hotels';
+      case 'attractions':
+        return 'Must-Visit Attractions';
+      default:
+        return 'Explore Places Around You';
+    }
+  };
+
   return (
     <div className={classes.container}>
-      <Typography variant="h4">Food & Dining around you</Typography>
+      <Typography variant="h4" style={{ fontWeight: 600, letterSpacing: '0.5px' }}>
+        {getTagline()}
+      </Typography>
+      
       {isLoading ? 
       (
         <div className={classes.loading}>
@@ -23,7 +38,6 @@ const List=({places,type,setType,rating,setRating,childClicked,isLoading})=>{
       ) : 
       (
         <>
-
           <FormControl className={classes.formControl}>
               <InputLabel id="type">Type</InputLabel>
                   <Select id="type" value={type} onChange={(e) => setType(e.target.value)}>
@@ -45,12 +59,11 @@ const List=({places,type,setType,rating,setRating,childClicked,isLoading})=>{
 
           <Grid container spacing={3} className={classes.list}>
             {places?.map((place, i) => (
-              <Grid ref={elRefs[i]} key={i} item xs={12}>
-                <PlaceDetails selected={Number(childClicked) === i} refProp={elRefs[i]} place={place} />
-              </Grid>
+               <Grid ref={elRefs[i]} key={i} item xs={12}>
+                 <PlaceDetails selected={Number(childClicked) === i} refProp={elRefs[i]} place={place} />
+               </Grid>
             ))}
           </Grid>
-
         </>
       )
       }

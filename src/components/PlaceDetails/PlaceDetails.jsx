@@ -4,7 +4,6 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PhoneIcon from '@material-ui/icons/Phone';
 import Rating from '@material-ui/lab/Rating';
 import restImage from '../../images/rest.png';
-
 import useStyles from './styles.js';
 
 const PlaceDetails=({place,selected,refProp})=>{
@@ -16,7 +15,11 @@ const PlaceDetails=({place,selected,refProp})=>{
 
       <CardMedia
         style={{ height: 350 }}
-        image={place.photo ? place.photo.images.large.url : restImage}
+        image={
+          place?.photo?.images?.large?.url ||
+          place?.photo?.images?.medium?.url ||
+          restImage
+        }
         title={place.name}
       />
 
@@ -68,15 +71,25 @@ const PlaceDetails=({place,selected,refProp})=>{
 
       </CardContent>
 
-      <CardActions>
-
-        <Button size="small" color="primary" onClick={()=>window.open(place.web_url, '_blank')}>
+      <CardActions style={{ padding: '8px 16px 16px 16px', display: 'flex', gap: '8px' }}>
+        <Button 
+          size="small" 
+          color="primary" 
+          variant="outlined" 
+          style={{ borderRadius: '20px', textTransform: 'none', fontWeight: 500, padding: '5px 15px' }}
+          onClick={()=>window.open(place.web_url, '_blank')}
+        >
           Trip Advisor
         </Button>
-        <Button size="small" color="primary" onClick={()=>window.open(place.website, '_blank')}>
+        <Button 
+          size="small" 
+          color="secondary" 
+          variant="contained" 
+          style={{ borderRadius: '20px', textTransform: 'none', fontWeight: 500, padding: '5px 15px', color: '#fff' }}
+          onClick={()=>window.open(place.website, '_blank')}
+        >
           Website
         </Button>
-
       </CardActions>
 
     </Card>

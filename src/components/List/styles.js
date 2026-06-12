@@ -17,6 +17,23 @@ export default makeStyles((theme) => ({
     marginBottom: '30px',
   },
   list: {
-    height: '75vh', overflow: 'auto',
+    height: '75vh', 
+    overflow: 'auto',
+    paddingRight: '6px',
+    '&::-webkit-scrollbar': {
+      width: '6px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'rgba(255, 255, 255, 0.02)',
+      borderRadius: '3px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: 'rgba(255, 255, 255, 0.12)',
+      borderRadius: '3px',
+      transition: 'background 0.3s ease',
+      '&:hover': {
+        background: 'rgba(99, 102, 241, 0.5)',
+      }
+    }
   },
 }));
