@@ -1,4 +1,4 @@
-export default [
+const mapStyles = [
   { elementType: "geometry", stylers: [{ color: "#1e293b" }] },
   { elementType: "labels.text.stroke", stylers: [{ color: "#0f172a" }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#94a3b8" }] },
@@ -78,3 +78,5 @@ export default [
     stylers: [{ color: "#0f172a" }],
   },
 ];
+
+export default mapStyles;

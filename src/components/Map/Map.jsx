@@ -31,7 +31,7 @@ const Map=({coords,places,setCoords,setBounds,setChildClicked,weatherData})=>{
             }
         >
 
-       {places.length && places.map((place,i)=>(
+       {places?.map((place,i)=>(
         <div
             className={classes.markerContainer}
             lat={Number(place.latitude)}
@@ -50,8 +50,13 @@ const Map=({coords,places,setCoords,setBounds,setChildClicked,weatherData})=>{
                           place?.photo?.images?.large?.url ||
                           place?.photo?.images?.medium?.url ||
                           restImage
-                      }
-                      />
+                          }
+                          alt={place.name}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = restImage;
+                          }}
+                        />
                     <Rating name="read-only" size="small" value={Number(place.rating)} readOnly />
                 </Paper>
               )
@@ -62,16 +67,31 @@ const Map=({coords,places,setCoords,setBounds,setChildClicked,weatherData})=>{
         {weatherData?.list?.length ? (
           weatherData.list.map((data, i) => (
             <div key={i} lat={data.coord.lat} lng={data.coord.lon} className={classes.weatherContainer}>
-              <img src={`https://openweathermap.org/img/w/${data.weather[0].icon}.png`} height="35px" alt="weather" />
+              <img 
+                src={`https://openweathermap.org/img/wn/${data.weather[0].icon}.png`} 
+                height="35px" 
+                alt="weather" 
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
             </div>
           ))
         ) : weatherData?.weather?.length ? (
           <div lat={weatherData.coord?.lat || coords.lat} lng={weatherData.coord?.lon || coords.lng} className={classes.weatherContainer}>
-            <img src={`https://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`} height="35px" alt="weather" />
+            <img 
+              src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`} 
+              height="35px" 
+              alt="weather" 
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
           </div>
         ) : weatherData?.current?.condition?.icon ? (
           <div lat={weatherData.location?.lat || coords.lat} lng={weatherData.location?.lon || coords.lng} className={classes.weatherContainer}>
-            <img src={weatherData.current.condition.icon.startsWith('http') ? weatherData.current.condition.icon : `https:${weatherData.current.condition.icon}`} height="35px" alt="weather" />
+            <img 
+              src={weatherData.current.condition.icon.startsWith('http') ? weatherData.current.condition.icon : `https:${weatherData.current.condition.icon}`} 
+              height="35px" 
+              alt="weather" 
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
           </div>
         ) : null}
 

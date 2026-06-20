@@ -5,7 +5,6 @@ import { getPlacesData, getWeatherData } from './api/travelAdvisorAPI';
 import Header from './components/Header/Header';
 import List from './components/List/List';
 import Map from './components/Map/Map';
-import PlaceDetails from './components/PlaceDetails/PlaceDetails';
 import { LoadScript } from '@react-google-maps/api';
 
 const LIBRARIES = ['places']; 
@@ -59,7 +58,7 @@ const App=()=>{
   const [type, setType] = useState('restaurants');
   const [rating, setRating] = useState('');
 
-  const [coords, setCoords] = useState({});
+  const [coords, setCoords] = useState({ lat: 40.7128, lng: -74.0060 });
   const [bounds, setBounds] = useState(null);
 
   const [weatherData, setWeatherData] = useState([]);
@@ -71,19 +70,24 @@ const App=()=>{
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
-      setCoords({ lat: latitude, lng: longitude });
-    });
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        setCoords({ lat: latitude, lng: longitude });
+      },
+      (error) => {
+        console.error("Error getting geolocation: ", error);
+      }
+    );
   }, []);
 
   useEffect(() => {
-    const filtered = places.filter((place) => Number(place.rating) > rating);
+    const filtered = places?.filter((place) => Number(place.rating) > rating);
 
-    setFilteredPlaces(filtered);
-  }, [rating]);
+    setFilteredPlaces(filtered || []);
+  }, [places, rating]);
 
   useEffect(() => {
-    if (bounds) {
+    if (bounds && coords.lat && coords.lng) {
       setIsLoading(true);
 
       getWeatherData(coords.lat, coords.lng)
@@ -91,20 +95,24 @@ const App=()=>{
 
       getPlacesData(type, bounds.sw, bounds.ne)
         .then((data) => {
-          setPlaces(
-            data.filter(
-              (place) =>
-                place.name &&
-                place.latitude &&
-                place.longitude
-            )
-        );
+          if (data && Array.isArray(data)) {
+            setPlaces(
+              data.filter(
+                (place) =>
+                  place.name &&
+                  place.latitude &&
+                  place.longitude
+              )
+            );
+          } else {
+            setPlaces([]);
+          }
           setFilteredPlaces([]);
           setRating('');
           setIsLoading(false);
         });
     }
-  }, [bounds, type]);
+  }, [bounds, type, coords.lat, coords.lng]);
 
   const onLoad = (autoC) => setAutocomplete(autoC);
 

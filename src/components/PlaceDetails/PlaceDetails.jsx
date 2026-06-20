@@ -14,13 +14,19 @@ const PlaceDetails=({place,selected,refProp})=>{
     <Card elevation={6}>
 
       <CardMedia
-        style={{ height: 350 }}
+        component="img"
+        style={{ height: 350, objectFit: 'cover' }}
         image={
           place?.photo?.images?.large?.url ||
           place?.photo?.images?.medium?.url ||
           restImage
         }
         title={place.name}
+        alt={place.name || "Place image"}
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = restImage;
+        }}
       />
 
       <CardContent>
@@ -48,7 +54,11 @@ const PlaceDetails=({place,selected,refProp})=>{
 
         {place?.awards?.map((award)=>(
           <Box display="flex" justifyContent="space-between" my={1} alignItems="center">
-            <img src={award.images.small} />
+            <img 
+              src={award.images.small} 
+              alt={award.display_name} 
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
             <Typography variant="subtitle2" color="textSecondary">{award.display_name}</Typography>
           </Box>
         ))}
